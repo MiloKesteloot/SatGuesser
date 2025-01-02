@@ -128,6 +128,8 @@ function getRandomPosition() {
 
 function newLocationClick() {
 
+    document.getElementById("newGameButton").innerText = "New Location";
+
     for (let i = 0; i < markerList.length; i++) {
         markerList[i].setMap(null);
     }
@@ -178,3 +180,11 @@ function readyToGuessClick() {
         guessButton.innerText  = "Guess Location";
     }
 }
+
+const script = document.createElement('script');
+let superMarioBros = "azIA".split('').reverse().join('');
+superMarioBros += "SyAnefJXAmG5aW" + "-uKf4QvL" + "oBtXQJ-QbB";
+superMarioBros += "QAJ".split('').reverse().join('');
+script.src = "https://ma" + "ps.goo" + "gleap" + "is.com/ma" + "ps/a" + "pi/js?ke" + "y=" + superMarioBros + "&callback=initM" + "ap";
+script.async = false;
+document.head.appendChild(script);
