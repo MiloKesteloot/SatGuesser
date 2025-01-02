@@ -1,16 +1,29 @@
+// Google map element
 let map = null;
+// Keep track of markers (flags, dotted line, etc.) for removal when new location is clicked
+let markerList = [];
+
+// List of all coordinates as a list of lists of numbers.
 let coordinates = null;
+
+// This is for the home screen panning animation
 let scrollLng = 31;
+
+// Variable for keeping track of guess vs. view mode
+let guessing = false;
+
+// Button for switching the text
+let guessButton = document.getElementById("guessButton");
+
+// Hide guess button until they click "start game"
 document.getElementById("guessButton").style.display = "none";
 
+// These are the randomly generated coordinates that get generated when the user clickes "new location"
 let recentLat = 0;
 let recentLong = 0;
 let recentHeading = 0;
-let guessing = false;
-let guessButton = document.getElementById("guessButton");
 
-let markerList = [];
-
+// Random styles for the map
 const stylesOff = [
     {
         elementType: 'labels',
@@ -23,8 +36,7 @@ const stylesOn = [
     }
 ];
 
-const image = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
-
+// Get CSV
 getCoordinatesArray('coordinates.csv')
     .then(coordinatesReturn => {
         coordinates = coordinatesReturn;
@@ -33,12 +45,14 @@ getCoordinatesArray('coordinates.csv')
         console.error('Error reading or parsing CSV:', error);
     });
 
+// Turn the CSV into a list of coordinates and save in variable coordinates
 async function getCoordinatesArray(filePath) {
     const csvText = await readCSV(filePath);
     const coordinates = parseCoordinates(csvText);
     return coordinates;
 }
 
+// Parse the CSV text into a list of coordinates
 function parseCoordinates(csvText) {
     const lines = csvText.trim().split('\n');
     for (let i = 0; i < lines.length; i++) {
@@ -53,12 +67,14 @@ function parseCoordinates(csvText) {
     });
 }
 
+// Get text from CSV
 async function readCSV(filePath) {
     const response = await fetch(filePath);
     const csvText = await response.text();
     return csvText;
 }
 
+// Set up map, this function runs only once.
 function initMap() { // fist is long, second is lat
     map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 8, lng: scrollLng },
@@ -66,14 +82,16 @@ function initMap() { // fist is long, second is lat
         mapTypeId: google.maps.MapTypeId.SATELLITE,
         disableDefaultUI: true,
         styles: stylesOn,
-        tilt: 0,
+        // tilt: 0,
         draggable: false,
         zoomControl: true,
-
+        tilt: 45,
+        // heading: 45
     });
 
     animate();
 
+    // I know this is ugly lol, I'll fix it later
     google.maps.event.addListener(map, 'click', function(event) {
 
         if (!guessing) return;
@@ -85,7 +103,7 @@ function initMap() { // fist is long, second is lat
             new google.maps.Marker({
                 position: { lat: lat, lng: lng },
                 map: map,
-                icon: image
+                icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
             })
         );
 
@@ -142,6 +160,7 @@ function newLocationClick() {
     recentLong = pos[0];
     guessing = false;
     guessButton.style.display = "inline-block";
+    guessButton.innerText  = "Guess Location";
 }
 
 function newMapLocation(lat, lng, heading = 0) {
@@ -153,6 +172,7 @@ function newMapLocation(lat, lng, heading = 0) {
     console.log("lat:", lat, "long:", lng);
 }
 
+// This just does the nice scroll animation on the home screen.
 function animate() {
     if (scrollLng === null) return;
     scrollLng += 0.021111111;
@@ -160,6 +180,7 @@ function animate() {
     setTimeout(animate);
 }
 
+// Switch between guess and view mode
 function readyToGuessClick() {
     guessing = !guessing;
     if (guessing) {
@@ -181,6 +202,7 @@ function readyToGuessClick() {
     }
 }
 
+// Nothing to see here, this code does nothing at all.
 const script = document.createElement('script');
 let superMarioBros = "azIA".split('').reverse().join('');
 superMarioBros += "SyAnefJXAmG5aW" + "-uKf4QvL" + "oBtXQJ-QbB";
@@ -188,3 +210,7 @@ superMarioBros += "QAJ".split('').reverse().join('');
 script.src = "https://ma" + "ps.goo" + "gleap" + "is.com/ma" + "ps/a" + "pi/js?ke" + "y=" + superMarioBros + "&callback=initM" + "ap";
 script.async = false;
 document.head.appendChild(script);
+
+// TODO
+// animates when zooms out
+// rotation
